@@ -9,6 +9,7 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import javax.inject.Singleton
 
 /*
 * di : 依赖注入
@@ -19,7 +20,14 @@ import retrofit2.converter.gson.GsonConverterFactory
 @InstallIn(SingletonComponent::class)
 class HttpModule {
     @Provides
-    fun provideAnalyticsService(): UserApi {
+    @Singleton // 单例
+    fun provideAnalyticsService(retrofit: Retrofit): UserApi {
+        return retrofit.create(UserApi::class.java)
+    }
+
+    @Provides
+    @Singleton // 单例
+    fun provideRetrofitService(): Retrofit {
         return Retrofit.Builder()
             .baseUrl("http://10.161.9.80:9999/")
             .client(OkHttpClient().newBuilder().addInterceptor(
@@ -27,6 +35,5 @@ class HttpModule {
             ).build())
             .addConverterFactory(GsonConverterFactory.create())
             .build()
-            .create(UserApi::class.java)
     }
 }
